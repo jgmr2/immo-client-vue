@@ -1,18 +1,100 @@
-# Vue 3 + TypeScript + Vite
+# Client Vue - Immo
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Ce projet est une application cliente construite avec Vue.js pour l'application Immo.
 
-## Recommended IDE Setup
+## Instructions
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+### Installation des dépendances
 
-## Type Support For `.vue` Imports in TS
+Pour installer les dépendances du projet, exécutez :
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+```sh
+npm install
+```
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+### Développement
 
-1. Disable the built-in TypeScript Extension
-   1. Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-   2. Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+Pour démarrer le serveur de développement, exécutez :
+
+```sh
+npm run serve
+```
+
+### Construction
+
+Pour construire l'application pour la production, exécutez :
+
+```sh
+npm run build
+```
+
+### Docker
+
+Pour construire et exécuter l'application avec Docker, utilisez les commandes suivantes :
+
+```sh
+docker build -t immo-client-vue .
+docker run -p 8081:80 immo-client-vue
+```
+
+## Docker Compose
+
+Pour utiliser Docker Compose et exécuter tous les services définis dans le fichier `docker-compose.yml`, utilisez les commandes suivantes :
+
+### Créer un fichier `docker-compose.yml`
+
+```yaml
+version: '3.8'
+
+services:
+  immo-admin-react:
+    build:
+      context: ./immo-admin-react
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+
+  immo-api-php:
+    build:
+      context: ./immo-api-php
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    environment:
+      - DB_HOST=db
+      - DB_DATABASE=immo
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+    depends_on:
+      - db
+
+  immo-client-vue:
+    build:
+      context: ./immo-client-vue
+      dockerfile: Dockerfile
+    ports:
+      - "8081:80"
+
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: immo
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
+```
+
+### Démarrer les services
+
+Pour démarrer tous les services définis dans le fichier `docker-compose.yml`, exécutez :
+
+```sh
+docker-compose up --build
+```
+
+Cela construira et démarrera tous les conteneurs définis dans le fichier `docker-compose.yml`.
